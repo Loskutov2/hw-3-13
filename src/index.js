@@ -1,34 +1,32 @@
-const BASE_URL = 'http://localhost:3000/movies';
+import f from './functions'
+import {refs} from './HTMLelements'
+import {animations} from './animations'
+import filmTpl from './filmTpl.handlebars'
 
-function getMovies(){
-    return fetch(`${BASE_URL}/movies`)
-    .then(response => response.json())
-}
+refs.postMovie.addEventListener('click', ()=>{
+    animations.addForm()
+    setTimeout(()=>{
+        const form = document.querySelector('.form')
+        form.addEventListener('submit', (e)=>{
+            e.preventDefault()
+            const newMovie={
+                title:e.currentTarget.elements.title.value,
+                genre:e.currentTarget.elements.genre.value,
+                director:e.currentTarget.elements.director.value,
+                year:e.currentTarget.elements.year.value
+            }
+            f.postMovie(newMovie)
+            animations.done()
+    })
+    }, 1)
+})
 
-function getMoviesById(id){
-    return fetch(`${BASE_URL}/${id}`)
-    .then(response => response.json())
-}
+refs.getAllMovies.addEventListener('click', ()=>{
+    animations.clear()
+    f.getAllMovies().then(movies=>{
+    const markUp = filmTpl(movies)
+    refs.container.insertAdjacentHTML('beforeend', markUp)
+    })
+})
 
-const newMovie = {
-    title: "Harry Potter",
-    director: "Somebody",
-    genres: [
-        "Fantastic"
-    ],
-    rating: 10
-}
-
-function postMovies(newMovie) {
-    const options = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(newMovie)
-    }
-    return fetch(`${BASE_URL}`,options)
-    .then(res=>res.json)
-}
-postMovies(newMovie)
-
+refs.deleteMovie.addEventListener('click', animations.done)
